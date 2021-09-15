@@ -23,7 +23,9 @@ struct Home: View {
     // Number of moves we can make
     @State var moves: [String] = Array(repeating: "", count: 9)
     //identfiy our current player
-    @State var isPlaying = false
+    @State var isPlaying = true
+    @State var gameOver = false
+    @State var msg = ""
     
     var body: some View {
         VStack {
@@ -34,26 +36,40 @@ struct Home: View {
                     index in
                     
                     ZStack {
+                        Color.pink
+                        
                         Color.white
+                            .opacity(moves[index] == "" ? 1 : 0)
                         
                         Text(moves[index])
                             .font(.system(size: 55))
                             .fontWeight(.heavy)
-                            .foregroundColor(.pink)
+                            .foregroundColor(.white)
                     }
                         .frame(width: getWidth(), height: getWidth())
                         .cornerRadius(10)
+                    .rotation3DEffect(
+                        .init(degrees: moves[index] != "" ? 180 : 0),
+                    axis: (x: 0.0, y: 1.0, z: 0.0),
+                    anchor: .center,
+                    anchorZ: 0.0,
+                    perspective: 1.0
+                    )
                     .onTapGesture(perform: {
                         withAnimation(Animation.easeIn(duration: 0.1)) {
-                            
+                            if moves [index] == "" {
                             moves[index] = isPlaying ? "X" : "O"
                             isPlaying.toggle()
+                            }
                         }
                     })
                 }
             }
             .padding(15)
         }
+        .onChange(of: moves, perform: { value in
+            checkWinner()
+        })
     }
     // calculate width of grid
     func getWidth() -> CGFloat {
@@ -61,8 +77,32 @@ struct Home: View {
         
         return width / 3
     }
-}
 
+
+func checkWinner() {
+    if checkMoves(player: "X") {
+        
+        msg = "player X won!"
+        gameOver.toggle()
+    }
+    else if checkMoves(player: "O") {
+        
+        msg = "player O won!"
+        gameOver.toggle()
+    }
+}
+func checkMoves(player: String) -> Bool {
+    for contestant in stride(from: 0, to: 9, by: 3) {
+        if moves[contestant] == player &&
+        moves[contestant+1] == player &&
+            moves[contestant+2] == player {
+            
+            return true
+        }
+    }
+    return false
+}
+}
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
