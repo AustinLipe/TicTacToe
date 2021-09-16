@@ -70,6 +70,16 @@ struct Home: View {
         .onChange(of: moves, perform: { value in
             checkWinner()
         })
+        .alert(isPresented: $gameOver, content: {
+            Alert(title: Text("Wineer"), message: Text(msg), dismissButton:
+                    .destructive(Text("Play Again"), action: {
+                        withAnimation(Animation.easeIn(duration: 0.5)) {
+                            moves.removeAll()
+                            moves = Array(repeating: "", count: 9)
+                            isPlaying = true
+                        }
+                    }))
+        })
     }
     // calculate width of grid
     func getWidth() -> CGFloat {
@@ -92,6 +102,7 @@ func checkWinner() {
     }
 }
 func checkMoves(player: String) -> Bool {
+    
     for contestant in stride(from: 0, to: 9, by: 3) {
         if moves[contestant] == player &&
         moves[contestant+1] == player &&
@@ -100,8 +111,23 @@ func checkMoves(player: String) -> Bool {
             return true
         }
     }
-    return false
-}
+    for contestant in 0...2 {
+    if  moves[contestant] == player &&
+        moves[contestant+3] == player &&
+        moves[contestant+6] == player {
+                
+                return true
+            }
+        }
+    
+    if moves[0] == player && moves [4] == player && moves [8] == player {
+        return true
+    }
+    if moves[2] == player && moves [4] == player && moves [6] == player {
+        return true
+    }
+  return false
+    }
 }
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
