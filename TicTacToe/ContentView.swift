@@ -71,7 +71,7 @@ struct Home: View {
             checkWinner()
         })
         .alert(isPresented: $gameOver, content: {
-            Alert(title: Text("Wineer"), message: Text(msg), dismissButton:
+            Alert(title: Text("Winer"), message: Text(msg), dismissButton:
                     .destructive(Text("Play Again"), action: {
                         withAnimation(Animation.easeIn(duration: 0.5)) {
                             moves.removeAll()
@@ -99,13 +99,22 @@ func checkWinner() {
         
         msg = "player O won!"
         gameOver.toggle()
+        
+    } else {
+        let status = moves.contains { (value) -> Bool in
+            return value == ""
+        }
+        if !status {
+            msg = "game tied"
+            gameOver.toggle()
+        }
     }
 }
 func checkMoves(player: String) -> Bool {
     
     for contestant in stride(from: 0, to: 9, by: 3) {
-        if moves[contestant] == player &&
-        moves[contestant+1] == player &&
+        if  moves[contestant] == player &&
+            moves[contestant+1] == player &&
             moves[contestant+2] == player {
             
             return true
